@@ -58,76 +58,96 @@ class Renderer {
     // framebuffer:  canvas ctx image data
     drawSlide1(framebuffer) { // circle
         var color = [175, 200, 150, 255];
+        var center = {x: 400.0, y: 400.0};
+        var radius = 100.0;
         this.drawCircle(center, radius, color, framebuffer);
     }
 
     // framebuffer:  canvas ctx image data
     drawSlide2(framebuffer) { // bezier curve
         var color = [175, 200, 150, 255];
-        drawBezierCurve(pt0, pt1, pt2, pt3, color, framebuffer);
+        var pt0 = {x: 100, y: 100};
+        var pt1 = {x: 150, y: 200};
+        var pt2 = {x: 350, y: 175};
+        var pt3 = {x: 300, y: 100};
+        this.drawBezierCurve(pt0, pt1, pt2, pt3, color, framebuffer);
     }
 
     // framebuffer:  canvas ctx image data
     drawSlide3(framebuffer) { // name
+        var i;
         var color = [175, 200, 150, 255];
         var pts = [
             [//s: [
-                {x: 200, y: 300},
-                {x: 100, y: 300},
                 {x: 100, y: 200},
-                {x: 200, y: 200},
-                {x: 200, y: 100},
-                {x: 100, y: 100},
-                {x: 10, y: 10},
-                {x: 999, y: 999},
-                {x: 10, y: 100},
-                {x: 790, y: 100}
+                {x: 20, y: 200},
+                {x: 20, y: 140},
+                {x: 100, y: 140},
+                {x: 100, y: 80},
+                {x: 20, y: 80}
             ],
             [//a: [
-                {x: 250, y: 100},
-                {x: 300, y: 300},
-                {x: 350, y: 100},
-                {x: 350, y: 200},
-                {x: 250, y: 200}
+                {x: 120, y: 80},
+                {x: 120, y: 200},
+                {x: 200, y: 200},
+                {x: 200, y: 80},
+                {x: 200, y: 140},
+                {x: 120, y: 140}
             ],
             [//l: [
-                {x: 100, y: 100},
-                {x: 300, y: 100},
-                {x: 300, y: 200},
-                {x: 100, y: 200}
+                {x: 220, y: 200},
+                {x: 220, y: 80},
+                {x: 300, y: 80}
             ],
             [//m: [
-                {x: 100, y: 100},
-                {x: 300, y: 100},
-                {x: 300, y: 200},
-                {x: 100, y: 200}
+                {x: 320, y: 80},
+                {x: 320, y: 200},
+                {x: 360, y: 140},
+                {x: 400, y: 200},
+                {x: 400, y: 80}
             ],
             [//a2: [
-                {x: 100, y: 100},
-                {x: 300, y: 100},
-                {x: 300, y: 200},
-                {x: 100, y: 200}
+                {x: 420, y: 80},
+                {x: 420, y: 200},
+                {x: 500, y: 200},
+                {x: 500, y: 80},
+                {x: 500, y: 140},
+                {x: 420, y: 140}
             ],
             [//a3: [
-                {x: 100, y: 100},
-                {x: 300, y: 100},
-                {x: 300, y: 200},
-                {x: 100, y: 200}
+                {x: 520, y: 80},
+                {x: 520, y: 200},
+                {x: 600, y: 200},
+                {x: 600, y: 80},
+                {x: 600, y: 140},
+                {x: 520, y: 140}
             ],
             [//n: [
-                {x: 100, y: 100},
-                {x: 300, y: 100},
-                {x: 300, y: 200},
-                {x: 100, y: 200}
+                {x: 620, y: 80},
+                {x: 620, y: 200},
+                {x: 700, y: 80},
+                {x: 700, y: 200}
             ]
         ];
-        console.log(pts[0]);
-        console.log(pts[0][1]);
+
+        this.drawBezierCurve({x: 100, y: 200},{x: 20, y: 200},{x: 20, y: 140},{x: 100, y: 140}, color, framebuffer);
+        this.drawBezierCurve({x: 20, y: 140},{x: 100, y: 140},{x: 100, y: 80},{x: 20, y: 80}, color, framebuffer);
+        this.drawCircle({x: 160, y: 170}, 20, color, framebuffer);
+        this.drawCircle({x: 460, y: 170}, 20, color, framebuffer);
+        this.drawCircle({x: 560, y: 170}, 20, color, framebuffer);
         for (var letter = 0; letter < pts.length; letter++)
         {
-            for (var i = 1; i < pts[letter].length; i++)
+            for (i = 1; i < pts[letter].length; i++)
             {
+                if (this.show_points && i == pts[letter].length-1)
+                {
+                    this.drawVertices(pts[letter][i], [225, 50, 150, 255], framebuffer);
+                }
                 this.drawLine(pts[letter][i-1], pts[letter][i%pts[letter].length], color, framebuffer);
+                if (this.show_points)
+                {
+                    this.drawVertices(pts[letter][i-1], [225, 50, 150, 255], framebuffer);
+                }
             }
         }
     }
@@ -149,7 +169,12 @@ class Renderer {
         for (i = 1; i < pts.vertices.length+1; i++)
         {
             this.drawLine(pts.vertices[i-1], pts.vertices[i%4], color, framebuffer);
+            if (this.show_points)
+            {
+                this.drawVertices(pts.vertices[i-1], [225, 50, 150, 255], framebuffer);
+            }
         }
+
     }
 
     // center:       object ({x: __, y: __})
@@ -157,7 +182,22 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // framebuffer:  canvas ctx image data
     drawCircle(center, radius, color, framebuffer) {
-        
+        var edges = this.num_curve_sections;
+        var vert1 = {x: 0, y: 0};
+        var vert2 = {x: 0, y: 0};
+        var theta = 360.0 / edges;
+        for (var i = 0.0; i < 360.0; i = i + theta) 
+        {
+            vert1.x = Math.round(center.x + radius * Math.cos(i * Math.PI / 180));
+            vert1.y = Math.round(center.y + radius * Math.sin(i * Math.PI / 180));
+            vert2.x = Math.round(center.x + radius * Math.cos((i + theta) * Math.PI / 180));
+            vert2.y = Math.round(center.y + radius * Math.sin((i + theta) * Math.PI / 180));
+            this.drawLine(vert1, vert2, color, framebuffer);
+            if (this.show_points)
+            {
+                this.drawVertices(vert1, [225, 50, 150, 255], framebuffer);
+            }
+        }
     }
 
     // pt0:          object ({x: __, y: __})
@@ -167,7 +207,50 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // framebuffer:  canvas ctx image data
     drawBezierCurve(pt0, pt1, pt2, pt3, color, framebuffer) {
-        
+        console.log("BEZIER CURVE");
+        var i;
+        var pts = [
+            [
+            ]
+        ];
+        for (var t = 0.0; t < 1 + 1.0/(this.num_curve_sections + 100); t = t + 1.0/this.num_curve_sections) // stop at length or length +1 ...?
+        {
+            var x0 = Math.pow((1 - t), 3) * pt0.x + 3 * Math.pow((1 - t), 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
+            var y0 = Math.pow((1 - t), 3) * pt0.y + 3 * Math.pow((1 - t), 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
+            pts[0].push({x: Math.round(x0), y: Math.round(y0)});  
+        }
+        for (i = 1; i < pts[0].length; i++)
+        {
+            this.drawLine(pts[0][i-1], pts[0][i], color, framebuffer);
+            if (this.show_points)
+            {
+                this.drawVertices(pts[0][i-1], [225, 50, 150, 255], framebuffer);
+            }
+        }
+        if (this.show_points)
+            {
+                this.drawVertices(pts[0][i-1], [225, 50, 150, 255], framebuffer);
+                this.drawVertices(pt1, [5, 255, 150, 255], framebuffer);
+                this.drawVertices(pt2, [5, 255, 150, 255], framebuffer);
+            }
+    }
+
+
+    drawVertices(vertex, color, framebuffer)
+    {
+        var edges = 20;
+        var radius = 2;
+        var vert1 = {x: 0, y: 0};
+        var vert2 = {x: 0, y: 0};
+        var theta = 360.0 / edges;
+        for (var i = 0.0; i < 360.0; i = i + theta)
+        {
+            vert1.x = Math.round(vertex.x + radius * Math.cos(i * Math.PI / 180));
+            vert1.y = Math.round(vertex.y + radius * Math.sin(i * Math.PI / 180));
+            vert2.x = Math.round(vertex.x + radius * Math.cos((i + theta) * Math.PI / 180));
+            vert2.y = Math.round(vertex.y + radius * Math.sin((i + theta) * Math.PI / 180));
+            this.drawLine(vert1, vert2, color, framebuffer);
+        }
     }
 
     // pt0:          object ({x: __, y: __})
@@ -176,6 +259,12 @@ class Renderer {
     // framebuffer:  canvas ctx image data
     drawLine(pt0, pt1, color, framebuffer)
     {
+        console.log("..................");
+        console.log("pt0 is ");
+        console.log(pt0);
+        console.log("TO");
+        console.log("pt1 is ");
+        console.log(pt1);
         var x0 = pt0.x;
         var y0 = pt0.y;
         var x1 = pt1.x;
@@ -257,7 +346,7 @@ class Renderer {
         var B = y0 - y1;
         var ix = 1;
         if (A < 0) {
-            ix = -1;// WAS PREVIOUSLY i = -1;
+            ix = -1;
             A *= -1;
         }
         var D = 2 * A + B;
